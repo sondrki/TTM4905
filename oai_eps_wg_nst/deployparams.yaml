@@ -1,0 +1,44 @@
+
+vld:
+  #- name: mgmtnet
+  #  vim-network-name: test
+  - name: test
+    vnfd-connection-point-ref:
+    - member-vnf-index-ref: "1"
+      vnfd-connection-point-ref: hss-ens4
+      ip-address: "192.168.8.1"
+    - member-vnf-index-ref: "2"
+      vnfd-connection-point-ref: mme-ens4
+      ip-address: "192.168.8.2"
+    - member-vnf-index-ref: "2"
+      vnfd-connection-point-ref: mme-ens5
+      ip-address: "192.168.10.2"
+    - member-vnf-index-ref: "2"
+      vnfd-connection-point-ref: mme-ens6
+      ip-address: "192.168.7.102"
+    - member-vnf-index-ref: "3"
+      vnfd-connection-point-ref: spgwc-ens4
+      ip-address: "192.168.16.101"
+    - member-vnf-index-ref: "3"
+      vnfd-connection-point-ref: spgwc-ens5
+      ip-address: "192.168.10.4"
+    - member-vnf-index-ref: "4"
+      vnfd-connection-point-ref: spgwu-ens4
+      ip-address: "192.168.16.102"
+    - member-vnf-index-ref: "4"
+      vnfd-connection-point-ref: spgwu-ens5
+      ip-address: "192.168.9.159"
+    - member-vnf-index-ref: "4"
+      vnfd-connection-point-ref: spgwu-ens6
+      ip-address: "10.254.1.203"
+    - member-vnf-index-ref: "5"
+      vnfd-connection-point-ref: enb-ens4
+      ip-address: "192.168.7.101"
+    - member-vnf-index-ref: "5"
+      vnfd-connection-point-ref: enb-ens5
+      ip-address: "192.168.9.57"
+    - member-vnf-index-ref: "5"
+      vnfd-connection-point-ref: enb-ens6
+      ip-address: "192.168.249.1"
+      
+
