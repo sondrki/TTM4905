@@ -1,0 +1,46 @@
+ nsd:
+  nsd:
+  - description: Base NS for building out new VNFs
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: '1'
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: '1'
+            constituent-cpd-id: vnf-cp0-ext
+          virtual-link-profile-id: mgmt2
+        - constituent-cpd-id:
+          - constituent-base-element-id: '2'
+            constituent-cpd-id: vnf-cp1-int
+          virtual-link-profile-id: datanet
+        vnfd-id:  sondrki_test_vnfd_wg4
+
+      - id: '2'
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: '1'
+            constituent-cpd-id: vnf-cp1-int
+          virtual-link-profile-id: datanet
+        - constituent-cpd-id:
+          - constituent-base-element-id: '2'
+            constituent-cpd-id: vnf-cp0-ext
+          virtual-link-profile-id: mgmt2
+        vnfd-id:  sondrki_test_vnfd_wg4
+
+    sapd:
+    - id: mgmtcp
+      virtual-link-desc: mgmt2
+    - id: datanetcp
+      virtual-link-desc: datanet
+
+    id:  sondrki_test_nsd_wg5
+    name:  sondrki_test_nsd_wg5
+    version: '1.8'
+    virtual-link-desc:
+    - id: mgmt2
+      mgmt-network: true
+      vim-network-name: test
+    - id: datanet
+    vnfd-id:
+    -  sondrki_test_vnfd_wg4
