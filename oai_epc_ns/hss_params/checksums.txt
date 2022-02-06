@@ -1,0 +1,1 @@
+8b036af4ef486a90bb3763f00771ff2d	hss_params/hss_vnfd.yaml
