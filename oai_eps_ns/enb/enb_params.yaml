@@ -1,0 +1,161 @@
+vnfd:
+  id: OAI-EPC_enb
+  product-name: OAI-EPC_enb
+  description: OpenAirInterface Evolved Packet Core eNB VNF. SOL006 version based on the work of Thomas Dreibholz
+  provider: Sondre Kielland (based on the work of Thomas Dreibholz)
+  version: '1.0'
+
+  df:
+  - id: enb-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 1
+        vdu-id: enb
+    vdu-profile:
+    - id: enb
+      min-number-of-instances: 1
+    lcm-operations-configuration:
+      operate-vnf-op-config:
+        day1-2:
+        - id: OAI-EPC_enb
+          juju:
+            charm: enbcharm
+          initial-config-primitive:
+          - seq: '1'
+            name: config
+            execution-environment-ref: OAI-EPC_enb
+            parameter:
+            - name: ssh-hostname
+              value: <rw_mgmt_ip>
+            - name: ssh-username
+              value: ubuntu
+            - name: ssh-password
+              value: osm4us
+          - seq: '2'
+            name: prepare-enb-build
+            execution-environment-ref: OAI-EPC_enb
+            parameter:
+            - name: enb-git-repository
+              value: 'https://gitlab.eurecom.fr/oai/openairinterface5g.git'
+          - seq: '3'
+            name: configure-enb
+            execution-environment-ref: OAI-EPC_enb
+            parameter:
+            - name: mcc
+              value: 208
+            - name: mnc
+              value: 95
+            - name: tracking-area
+              value: 600
+            - name: mme-ip
+              value: '192.168.247.102'
+            - name: s1c-ip
+              value: '192.168.247.101'
+            - name: s1u-ip
+              value: '192.168.248.57'
+            - name: s1c-interface
+              value: 'ens4'
+            - name: s1u-interface
+              value: 'ens5'
+            - name: s1-subnetsize
+              value: 24
+            - name: uu-ip
+              value: '192.168.249.1'
+            - name: uu-interface
+              value: 'ens6'
+            - name: uu-subnetsize
+              value: 24
+          - seq: '4'
+            name: start-enb
+            execution-environment-ref: OAI-EPC_enb
+          config-primitive:
+          - name: restart-enb
+          - name: stop-enb
+
+          
+  vdu:
+  - id: enb
+    # ###### VDU: SPGW-U ##########################
+    name: enb
+    description: enb
+    # count: 1
+    cloud-init-file: enb-init
+    sw-image-desc: ubuntu18.04
+    virtual-compute-desc: enb-compute-desc
+    virtual-storage-desc: 
+    - enb-storage
+
+    # ====== Internal Connection Points ===============================
+    int-cpd:
+    - id: enb-mgmt-cp
+      virtual-network-interface-requirement:
+      - name: ens3
+        position: 1
+        virtual-interface:
+          type: PARAVIRT
+    - id: enb-s1c-cp
+      virtual-network-interface-requirement:
+      - name: ens4
+        position: 2
+        virtual-interface:
+          type: PARAVIRT
+    - id: enb-s1u-cp
+      virtual-network-interface-requirement:
+      - name: ens5
+        position: 3
+        virtual-interface:
+          type: PARAVIRT
+    - id: enb-uu-cp
+      virtual-network-interface-requirement:
+      - name: ens6
+        position: 4
+        virtual-interface:
+          type: PARAVIRT
+
+
+  # ====== VDU VM Configuration =====================================
+  virtual-compute-desc:
+  - id: enb-compute-desc
+    virtual-memory:
+      size: 8.0
+      #size: 3.0
+      #size: 10.0
+    virtual-cpu:
+      #num-virtual-cpu: 2
+      #num-virtual-cpu: 6
+      num-virtual-cpu: 4
+
+  virtual-storage-desc:
+  - id: enb-storage
+    # size-of-storage: 64
+    size-of-storage: 20
+
+  # VM image description
+  sw-image-desc:
+  - id: ubuntu18.04
+    image: ubuntu18.04
+    name: ubuntu18.04
+
+  ext-cpd:
+  - id: enb-ens3
+    int-cpd:
+      cpd: enb-mgmt-cp
+      vdu-id: enb
+  - id: enb-ens4
+    int-cpd:
+      cpd: enb-s1c-cp
+      vdu-id: enb
+  - id: enb-ens5
+    port-security-enabled: false
+    int-cpd:
+      cpd: enb-s1u-cp
+      vdu-id: enb
+  - id: enb-ens6
+    port-security-enabled: false
+    int-cpd:
+      cpd: enb-uu-cp
+      vdu-id: enb
+
+
+  mgmt-cp: enb-ens3
