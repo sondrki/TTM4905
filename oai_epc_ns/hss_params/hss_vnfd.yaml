@@ -1,0 +1,190 @@
+vnfd:
+  id:  OAI-EPC_hss
+  product-name:  OAI-EPC_hss
+  #short-name: OAI-EPC_vnfd
+  description: SimulaMet OpenAirInterface Evolved Packet Core VNF. SOL006 version of Thomas Dreibholz version
+  provider: Thomas Dreibholz & Sondre Kielland
+  version: '1.0'
+  # logo: NorNet.png
+
+  df:
+  - id: hss-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 1
+        vdu-id: HSS
+    vdu-profile:
+    - id: HSS
+      min-number-of-instances: 1
+    #virtual-link-profile:
+    #- id: ens4      # internal VLD ID goes here
+    #  virtual-link-protocol-data:
+    #    l3-protocol-data:
+    #      cidr: 172.16.6.0/24
+    #      dhcp-enabled: true
+    lcm-operations-configuration:
+      operate-vnf-op-config:
+        day1-2:
+        - id:  OAI-EPC_hss
+          juju:
+            charm: hsscharm_new
+          config-access:
+            ssh-access:
+              default-user: ubuntu
+              required: true
+          initial-config-primitive:
+          - seq: '1'
+            name: config
+            execution-environment-ref:  OAI-EPC_hss
+            parameter:
+            - name: ssh-hostname
+              value: <rw_mgmt_ip>
+            - name: ssh-username
+              value: ubuntu
+            - name: ssh-password
+              value: osm4us
+          - seq: '2'
+            name: prepare-cassandra-hss-build
+            execution-environment-ref: OAI-EPC_hss
+            parameter:
+            - name: hss-git-repository
+              value: 'https://github.com/simula/openairinterface-openair-hss.git'
+            - name: hss-git-commit
+              value: 'dreibh/cassandra-build-fix-22oct2020'
+          - seq: '3'
+            name: configure-cassandra
+            execution-environment-ref: OAI-EPC_hss
+            parameter:
+            - name: cassandra-server-ip
+              value: 172.16.6.129
+          - seq: '4'
+            name: configure-hss
+            parameter:
+            - name: cassandra-server-ip
+              value: 172.16.6.129
+            - name: hss-S6a-address
+              value: 172.16.6.129
+            - name: mme-S6a-address
+              value: 172.16.6.2
+            - name: network-realm
+              value: 'ntnu.no'
+            - name: network-op
+              value: '1006020F0A478BF6B699F15C062E42B3'
+            - name: network-k
+              value: '449C4B91AEACD0ACE182CF3A5A72BFA1'
+            - name: network-imsi-first
+              value: '208951234500000'
+            - name: network-msisdn-first
+              value: '20895880000000'
+            - name: network-users
+              value: 1024
+          - seq: 5
+            name: restart-hss
+            execution-environment-ref: OAI-EPC_hss
+
+
+
+  vdu:
+  - id: HSS
+    # ###### VDU: HSS (Home Subscriber Server) ##########################
+    name: HSS
+    description: HSS
+    # count: 1
+    cloud-init-file: hss-init
+    sw-image-desc:  ubuntu18.04
+    virtual-compute-desc: hss-compute-desc
+    virtual-storage-desc: 
+    - hss-storage
+
+    # ====== Internal Connection Points ===============================
+    int-cpd:
+    - id: hss-mgmt-cp
+      virtual-network-interface-requirement:
+      - name: ens3
+        position: 1
+        virtual-interface:
+          type: PARAVIRT
+    - id: hss-s6a-cp
+      virtual-network-interface-requirement:
+      - name: ens4
+        position: 2
+        virtual-interface:
+          type: PARAVIRT
+
+    # monitoring parameters
+    monitoring-parameter:
+    - id: system_random
+      name: system_random
+    - id: system_uptime
+      name: system_uptime
+    - id: system_users
+      name: system_users
+    - id: cpu_processes
+      name: cpu_processes
+    - id: cpu_load_current
+      name: cpu_load_current
+    - id: cpu_load_1min
+      name: cpu_load_1min
+    - id: cpu_load_5min
+      name: cpu_load_5min
+    - id: cpu_load_15min
+      name: cpu_load_15min
+    - id: memory_ram_usage
+      name: memory_ram_usage
+    - id: memory_swap_usage
+      name: memory_swap_usage
+    - id: disk_usage
+      name: disk_usage
+    - id: network_mgmt_bytes_in
+      name: network_mgmt_bytes_in
+    - id: network_mgmt_packets_in
+      name: network_mgmt_packets_in
+    - id: network_mgmt_bytes_out
+      name: network_mgmt_bytes_out
+    - id: network_mgmt_packets_out
+      name: network_mgmt_packets_out
+    - id: network_S6a_bytes_in
+      name: network_S6a_bytes_in
+    - id: network_S6a_packets_in
+      name: network_S6a_packets_in
+    - id: network_S6a_bytes_out
+      name: network_S6a_bytes_out
+    - id: network_S6a_packets_out
+      name: network_S6a_packets_out
+
+      
+
+  # ====== VDU VM Configuration =====================================
+  virtual-compute-desc:
+  - id: hss-compute-desc
+    virtual-memory:
+      size: 6.0
+    virtual-cpu:
+      num-virtual-cpu: 3
+
+  virtual-storage-desc:
+  - id: hss-storage
+    size-of-storage: 20
+
+  # VM image description
+  sw-image-desc:
+  - id:  ubuntu18.04
+    image:  ubuntu18.04
+    name:  ubuntu18.04
+
+  ext-cpd:
+  - id: hss-ens3
+    int-cpd:
+      cpd: hss-mgmt-cp
+      vdu-id: HSS
+  - id: hss-ens4
+    int-cpd:
+      cpd: hss-s6a-cp
+      vdu-id: HSS
+
+  #int-virtual-link-desc:
+  #  - id: vnf_vl_Htqu
+
+  mgmt-cp: hss-ens3
+

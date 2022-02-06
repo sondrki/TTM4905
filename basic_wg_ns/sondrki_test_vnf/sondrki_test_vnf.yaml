@@ -1,0 +1,140 @@
+vnfd:
+  description: VNFD for  sondrki test VNF
+  df:
+  - id:  sondrki-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 1
+        vdu-id:  sondrki_test_vnf-VM
+    vdu-profile:
+    - id:  sondrki_test_vnf-VM
+      min-number-of-instances: 1
+    lcm-operations-configuration:
+      operate-vnf-op-config:
+        day1-2:
+        - id:  sondrki_test_vnfd_wg4
+          juju:
+            charm: wgcharm
+          config-access:
+            ssh-access:
+              default-user: ubuntu
+              required: true
+          initial-config-primitive:
+          - name: config
+            execution-environment-ref:  sondrki_test_vnfd_wg4
+            parameter:
+            - name: ssh-hostname
+              value: <rw_mgmt_ip>
+            - name: ssh-username
+              value: ubuntu
+            - name: ssh-password
+              value: osm4u
+            seq: '1'
+          - name: test
+            execution-environment-ref:  sondrki_test_vnfd_wg4
+            seq: '2'
+          - name: wgconfig
+            execution-environment-ref:  sondrki_test_vnfd_wg4
+            parameter:
+            - name: filename
+              value: '/home/ubuntu/wgconf'
+            seq: '3'
+          - name: generatekeys
+            execution-environment-ref:  sondrki_test_vnfd_wg4
+            seq: '4'
+          - name: generatewgconfig
+            execution-environment-ref:  sondrki_test_vnfd_wg4
+            seq: '5'
+          - name: wgup
+            execution-environment-ref:  sondrki_test_vnfd_wg4
+            seq: '6'
+          config-primitive:
+          - name: wgaddpeer
+            parameter:
+            - name: peer-publickey
+              data-type: STRING
+              default-value: ''
+            - name: subnet-behind-tunnel
+              data-type: STRING
+              default-value: '192.168.0.0/16'
+            - name: public_endpoint
+              data-type: STRING
+              default-value: '192.168.0.1/24'
+
+  ext-cpd:
+  - id: vnf-cp0-ext
+    int-cpd:
+      cpd: eth0-ext
+      vdu-id:  sondrki_test_vnf-VM
+  - id: vnf-cp1-int
+    int-cpd:
+      cpd: eth1-int
+      vdu-id:  sondrki_test_vnf-VM
+  id:  sondrki_test_vnfd_wg4
+  mgmt-cp: vnf-cp0-ext
+  product-name:  sondrki_test_vnfd_wg4
+  sw-image-desc:
+  - id: ubuntu18.04
+    image: ubuntu18.04
+    name: ubuntu18.04
+  vdu:
+  - id:  sondrki_test_vnf-VM
+    cloud-init-file: cloud-config.txt
+    int-cpd:
+    - id: eth0-ext
+      virtual-network-interface-requirement:
+      - name: vnf-cp0-ext
+        virtual-interface:
+          type: PARAVIRT
+    - id: eth1-int
+      virtual-network-interface-requirement:
+      - name: vnf-cp1-int
+        virtual-interface:
+          type: PARAVIRT
+
+    monitoring-parameter:
+    - id: vnf_cpu_util
+      name: vnf_cpu_util
+      performance-metric: cpu_utilization
+    - id: vnf_memory_util
+      name: vnf_memory_util
+      performance-metric: average_memory_utilization
+    - id: vnf_packets_sent
+      name: vnf_packets_sent
+      performance-metric: packets_sent
+    - id: vnf_packets_received
+      name: vnf_packets_received
+      performance-metric: packets_received
+        
+
+
+    name:  sondrki_test_vnf-VM
+    sw-image-desc: ubuntu18.04
+    virtual-compute-desc:  sondrki_test_vnf-VM-compute
+    virtual-storage-desc:
+    -  sondrki_test_vnf-VM-storage
+  version: '1.8'
+  virtual-compute-desc:
+  - id:  sondrki_test_vnf-VM-compute
+    virtual-cpu:
+      num-virtual-cpu: "1"
+    virtual-memory:
+      size: "1.0"
+  virtual-storage-desc:
+  - id:  sondrki_test_vnf-VM-storage
+    size-of-storage: "10"
+
+  monitoring-param:
+  - id: metric_vim_vnf1_cpu
+    name: metric_vim_vnf1_cpu
+    aggregation-type: AVERAGE
+    vdu-monitoring-param:
+      vdu-ref:  sondrki_test_vnf-VM
+      vdu-monitoring-param-ref: metric_vdu1_cpu
+-   id: metric_vim_vnf1_memory
+    name: metric_vim_vnf1_memory
+    aggregation-type: AVERAGE
+    vdu-monitoring-param:
+      vdu-ref:  sondrki_test_vnf-VM
+      vdu-monitoring-param-ref: metric_vdu1_memory

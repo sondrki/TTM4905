@@ -1,0 +1,219 @@
+# eps_nsd.yaml
+
+ nsd:
+  nsd:
+  - description: NS based on SimulaMet OpenAirInterface Evolved Packet Core NS
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: '1'
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: '1'
+            constituent-cpd-id: hss-ens3
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: '2'
+            constituent-cpd-id: hss-ens4
+            ip-address: 192.168.8.129
+          virtual-link-profile-id: s6a
+        vnfd-id: OAI-EPC_hsswg_double
+      
+      - id: '2'
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: '1'
+            constituent-cpd-id: mme-ens3
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: '2'
+            constituent-cpd-id: mme-ens4
+            ip-address: 192.168.8.2
+          virtual-link-profile-id: s6a
+        - constituent-cpd-id:
+          - constituent-base-element-id: '3'
+            constituent-cpd-id: mme-ens5
+            ip-address: 192.168.10.2
+          virtual-link-profile-id: s11
+        - constituent-cpd-id:
+          - constituent-base-element-id: '4'
+            constituent-cpd-id: mme-ens6
+            ip-address: 192.168.7.102
+          virtual-link-profile-id: s1c
+        vnfd-id: OAI-EPC_mmewg_double
+
+      - id: '3'
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: '1'
+            constituent-cpd-id: spgwc-ens3
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: '2'
+            constituent-cpd-id: spgwc-ens4
+            ip-address: 192.168.16.101
+          virtual-link-profile-id: sxab
+        - constituent-cpd-id:
+          - constituent-base-element-id: '3'
+            constituent-cpd-id: spgwc-ens5
+            ip-address: 192.168.10.4
+          virtual-link-profile-id: s11
+        vnfd-id: OAI-EPC_spgwcwg_double
+        
+      - id: '4'
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: '1'
+            constituent-cpd-id: spgwu-ens3
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: '2'
+            constituent-cpd-id: spgwu-ens4
+            ip-address: 192.168.16.102
+          virtual-link-profile-id: sxab
+        - constituent-cpd-id:
+          - constituent-base-element-id: '3'
+            constituent-cpd-id: spgwu-ens5
+          virtual-link-profile-id: s1u
+        - constituent-cpd-id:
+          - constituent-base-element-id: '4'
+            constituent-cpd-id: spgwu-ens6
+          virtual-link-profile-id: sgi
+        vnfd-id: OAI-EPC_spgwuwg_double
+      - id: '5'
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: '1'
+            constituent-cpd-id: enb-ens3
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: '2'
+            constituent-cpd-id: enb-ens4
+            ip-address: 192.168.7.101
+          virtual-link-profile-id: s1c
+        - constituent-cpd-id:
+          - constituent-base-element-id: '3'
+            constituent-cpd-id: enb-ens5
+            ip-address: 192.168.9.57
+          virtual-link-profile-id: s1u
+        - constituent-cpd-id:
+          - constituent-base-element-id: '4'
+            constituent-cpd-id: enb-ens6
+            ip-address: 192.168.249.1
+          virtual-link-profile-id: uu
+        vnfd-id: OAI-EPC_enbwg_double
+        
+      virtual-link-profile:
+      - id: s6a
+        virtual-link-desc-id: s6a
+        virtual-link-protocol-data:
+          l3-protocol-data:
+            ip-version: ipv4
+            cidr: 192.168.8.0/24
+            dhcp-enabled: false
+      - id: s1c
+        virtual-link-desc-id: s1c
+        virtual-link-protocol-data:
+          l3-protocol-data:
+            ip-version: ipv4
+            cidr: 192.168.7.0/24
+            dhcp-enabled: false
+      - id: s1u
+        virtual-link-desc-id: s1u
+        virtual-link-protocol-data:
+          l3-protocol-data:
+            ip-version: ipv4
+            cidr: 192.168.9.0/24
+            dhcp-enabled: false
+      - id: s11
+        virtual-link-desc-id: s11
+        virtual-link-protocol-data:
+          l3-protocol-data:
+            ip-version: ipv4
+            cidr: 192.168.10.0/24
+            dhcp-enabled: false
+      - id: sxab
+        virtual-link-desc-id: sxab
+        virtual-link-protocol-data:
+          l3-protocol-data:
+            ip-version: ipv4
+            cidr: 192.168.16.0/24
+            dhcp-enabled: false
+      - id: sgi
+        virtual-link-desc-id: sgi
+        virtual-link-protocol-data:
+          l3-protocol-data:
+            ip-version: ipv4
+            cidr: 10.254.1.0/24
+            dhcp-enabled: false
+      - id: uu
+        virtual-link-desc-id: uu
+        virtual-link-protocol-data:
+          l3-protocol-data:
+            ip-version: ipv4
+            cidr: 192.168.249.0/24
+            dhcp-enabled: false
+
+
+    id: OAI-EPC_nsdwg_double
+    name: OAI-EPC_nsdwg_double
+    version: '1.0'
+    
+    virtual-link-desc:
+    - id: mgmtnet
+      mgmt-network: true
+      vim-network-name: test
+    - id: s11
+    - id: sgi
+    - id: s1u
+    - id: sxab
+    - id: s1c
+    - id: s6a
+    - id: uu
+   
+    sapd:
+    - id: mgmtcp
+      virtual-link-desc: mgmtnet
+    #- id: s11
+    #  virtual-link-desc: s11
+
+
+    vnfd-id:
+    - OAI-EPC_hsswg_double
+    - OAI-EPC_mmewg_double
+    - OAI-EPC_spgwcwg_double
+    - OAI-EPC_spgwuwg_double
+    - OAI-EPC_enbwg_double
+
+    ns-configuration:
+      relation:
+      - name: relations6a
+        entities:
+        - id: '1'
+          endpoint: interfaces6a
+        - id: '2'
+          endpoint: interfaces6a
+      - name: relations1c
+        entities:
+        - id: '2'
+          endpoint: interfaces1c
+        - id: '5'
+          endpoint: interfaces1c
+      - name: relationsab
+        entities:
+        - id: '3'
+          endpoint: interfacesxab
+        - id: '4'
+          endpoint: interfacesxab
+      - name: relations11
+        entities:
+        - id: '2'
+          endpoint: interfaces11
+        - id: '3'
+          endpoint: interfaces11
+      - name: relations1u
+        entities:
+        - id: '4'
+          endpoint: interfaces1u
+        - id: '5'
+          endpoint: interfaces1u

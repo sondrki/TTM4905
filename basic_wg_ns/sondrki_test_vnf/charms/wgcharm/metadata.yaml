@@ -1,0 +1,16 @@
+name: wgcharm
+summary: Wireguard test charm
+maintainer: Sondre Kielland <sondrki@stud.ntnu.no>
+description: |
+  WireGuard example charm based on Simen Haga's master thesis.
+tags:
+  - nfv
+  - vpn
+  - wireguard
+subordinate: false
+series:
+  - bionic
+  - xenial
+peers:
+  proxypeer:
+    interface: proxypeer
