@@ -1,0 +1,322 @@
+vnfd:
+  id: OAI-EPC_mmewg_multi
+  product-name: OAI-EPC_mmewg_multi
+  #short-name: OAI-EPC_vnfd
+  description: OpenAirInterface Evolved Packet Core MME VNF. SOL006 version based on the work of Thomas Dreibholz
+  provider: Sondre Kielland (based on the work of Thomas Dreibholz)
+  version: '1.0'
+  # logo: NorNet.png
+
+  df:
+  - id: mme-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 1
+        vdu-id: mme
+    vdu-profile:
+    - id: mme
+      min-number-of-instances: 1
+    lcm-operations-configuration:
+      operate-vnf-op-config:
+        day1-2:
+        - id: OAI-EPC_mmewg_multi
+          juju:
+            charm: mmecharm
+          config-access:
+            ssh-access:
+              default-user: ubuntu
+              required: true
+          initial-config-primitive:
+          - seq: '1'
+            name: config
+            execution-environment-ref: OAI-EPC_mmewg_multi
+            parameter:
+            - name: ssh-hostname
+              value: <rw_mgmt_ip>
+            - name: ssh-username
+              value: ubuntu
+            - name: ssh-password
+              value: osm4us
+          - seq: '2'
+            name: generatekeys
+            parameter:
+              - name: wg-interface
+                value: 'wg0'
+            execution-environment-ref: OAI-EPC_mmewg_multi
+          - seq: '3'
+            name: generatewgconfig
+            execution-environment-ref: OAI-EPC_mmewg_multi
+            parameter: #s6a interface tunnel
+            - name: tunnel-subnet
+              value: '172.16.6.0/24'
+            - name: endpoint
+              value: '172.16.6.28/24'
+            - name: wg-interface
+              value: 'wg0'
+            - name: listenport
+              value: '5201'
+          - seq: '4'
+            name: wgup
+            parameter: #s6a interface tunnel
+            - name: wg-interface
+              value: 'wg0'
+            execution-environment-ref: OAI-EPC_mmewg_multi
+
+          - seq: '5'
+            name: prepare-mme-build
+            execution-environment-ref: OAI-EPC_mmewg_multi
+            parameter:
+            - name: mme-git-repository
+              value: 'https://github.com/simula/openairinterface-openair-mme.git'
+            - name: mme-git-commit
+              value: 'dreibh/asn1c-url-fix-14Oct2020'
+            - name: mme-S1C-ipv4-interface
+              value: '192.168.7.102/24'
+              #value: '192.168.247.102/24'
+            - name: mme-S1C-ipv4-gateway
+              value: '0.0.0.0'
+            - name: mme-S1C-ipv6-interface
+              value: ''
+            - name: mme-S1C-ipv6-gateway
+              value: ''
+          - seq: '6'
+            name: configure-mme
+            execution-environment-ref: OAI-EPC_mmewg_multi
+            parameter:
+            - name: mme-S1C-ipv4-interface
+              #value: '192.168.7.102/24'
+              value: '192.168.247.102/24'
+            - name: mme-S11-ipv4-interface
+              #value: '192.168.10.2/24'
+              value: '172.16.1.102/24'
+            - name: spgwc-S11-ipv4-interface
+              #value: '192.168.10.4/24'
+              value: '172.16.1.104/24'
+            - name: hss-S6a-address
+              value: '172.16.6.129'
+            - name: network-realm
+              value: 'ntnu.no'
+            - name: network-mcc
+              value: 208
+            - name: network-mnc
+              value: 95
+            - name: network-op
+              value: '1006020F0A478BF6B699F15C062E42B3'
+            - name: network-k
+              value: '449C4B91AEACD0ACE182CF3A5A72BFA1'
+            - name: network-imsi-first
+              value: '208951234500000'
+            - name: network-msisdn-first
+              value: '20895880000000'
+            - name: network-users
+              value: 1024
+          - seq: '7'
+            name: restart-mme
+            execution-environment-ref: OAI-EPC_mmewg_multi
+          - seq: '8'
+            name: generatekeys
+            parameter:
+              - name: wg-interface
+                value: 'wg1'
+            execution-environment-ref: OAI-EPC_mmewg_multi
+          - seq: '9'
+            name: generatekeys
+            parameter:
+              - name: wg-interface
+                value: 'wg2'
+            execution-environment-ref: OAI-EPC_mmewg_multi
+          - seq: '10'
+            name: generatewgconfig
+            execution-environment-ref: OAI-EPC_mmewg_multi
+            parameter: #s11 interface tunnel
+            - name: tunnel-subnet
+              value: '172.16.1.0/24'
+            - name: gateway-ip
+              value: '192.168.10.2'
+            - name: endpoint
+              value: '172.16.1.12/24'
+            - name: wg-interface
+              value: 'wg1'
+            - name: listenport
+              value: '51821'
+          - seq: '11'
+            name: wgup
+            parameter: #s11 interface tunnel
+            - name: wg-interface
+              value: 'wg1'
+          - seq: '12'
+            name: generatewgconfig # s1c
+            execution-environment-ref: OAI-EPC_mmewg_multi
+            parameter: #s11 interface tunnel
+            - name: tunnel-subnet
+              value: '192.168.247.0/24'
+            - name: gateway-ip
+              value: '192.168.7.102'
+            - name: endpoint
+              value: '192.168.247.12/24'
+            - name: wg-interface
+              value: 'wg2'
+            - name: listenport
+              value: '51822'
+          - seq: '13'
+            name: wgup
+            parameter: #s11 interface tunnel
+            - name: wg-interface
+              value: 'wg2'
+            execution-environment-ref: OAI-EPC_mmewg_multi
+          config-primitive:
+          - name: wgaddpeer
+            parameter:
+            - name: peer-publickey
+              data-type: STRING
+              default-value: ''
+            - name: subnet-behind-tunnel
+              data-type: STRING
+              default-value: '192.168.0.0/16'
+            - name: public_endpoint
+              data-type: STRING
+              default-value: '192.168.0.1/24'
+          - name: wgdelpeer
+          - name: wgrestart
+
+
+
+  vdu:
+  - id: mme
+    # ###### VDU: mme (Home Subscriber Server) ##########################
+    name: mme
+    description: mme
+    # count: 1
+    cloud-init-file: mme-init
+    sw-image-desc: ubuntu18.04
+    virtual-compute-desc: mme-compute-desc
+    virtual-storage-desc: 
+    - mme-storage
+
+    # ====== Internal Connection Points ===============================
+    int-cpd:
+    - id: mme-mgmt-cp
+      virtual-network-interface-requirement:
+      - name: ens3
+        position: 1
+        virtual-interface:
+          type: PARAVIRT
+    - id: mme-s6a-cp
+      virtual-network-interface-requirement:
+      - name: ens4
+        position: 2
+        virtual-interface:
+          type: PARAVIRT
+    - id: mme-s11-cp
+      virtual-network-interface-requirement:
+      - name: ens5
+        position: 3
+        virtual-interface:
+          type: PARAVIRT
+    - id: mme-s1c-cp
+      virtual-network-interface-requirement:
+      - name: ens6
+        position: 4
+        virtual-interface:
+          type: PARAVIRT
+
+    # monitoring parameters
+    monitoring-parameter:
+    - id: system_random
+      name: system_random
+    - id: system_uptime
+      name: system_uptime
+    - id: system_users
+      name: system_users
+    - id: cpu_processes
+      name: cpu_processes
+    - id: cpu_load_current
+      name: cpu_load_current
+    - id: cpu_load_1min
+      name: cpu_load_1min
+    - id: cpu_load_5min
+      name: cpu_load_5min
+    - id: cpu_load_15min
+      name: cpu_load_15min
+    - id: memory_ram_usage
+      name: memory_ram_usage
+    - id: memory_swap_usage
+      name: memory_swap_usage
+    - id: disk_usage
+      name: disk_usage
+    - id: network_mgmt_bytes_in
+      name: network_mgmt_bytes_in
+    - id: network_mgmt_packets_in
+      name: network_mgmt_packets_in
+    - id: network_mgmt_bytes_out
+      name: network_mgmt_bytes_out
+    - id: network_mgmt_packets_out
+      name: network_mgmt_packets_out
+    - id: network_S6a_bytes_in
+      name: network_S6a_bytes_in
+    - id: network_S6a_packets_in
+      name: network_S6a_packets_in
+    - id: network_S6a_bytes_out
+      name: network_S6a_bytes_out
+    - id: network_S6a_packets_out
+      name: network_S6a_packets_out
+    - id: network_S11_bytes_in
+      name: network_S11_bytes_in
+    - id: network_S11_packets_in
+      name: network_S11_packets_in
+    - id: network_S11_bytes_out
+      name: network_S11_bytes_out
+    - id: network_S11_packets_out
+      name: network_S11_packets_out
+    - id: network_S1C_bytes_in
+      name: network_S1C_bytes_in
+    - id: network_S1C_packets_in
+      name: network_S1C_packets_in
+    - id: network_S1C_bytes_out
+      name: network_S1C_bytes_out
+    - id: network_S1C_packets_out
+      name: network_S1C_packets_out
+
+      
+
+  # ====== VDU VM Configuration =====================================
+  virtual-compute-desc:
+  - id: mme-compute-desc
+    virtual-memory:
+      size: 4.0
+    virtual-cpu:
+      # num-virtual-cpu: 4
+      num-virtual-cpu: 2
+
+  virtual-storage-desc:
+  - id: mme-storage
+    # size-of-storage: 64
+    size-of-storage: 20
+
+  # VM image description
+  sw-image-desc:
+  - id: ubuntu18.04
+    image: ubuntu18.04
+    name: ubuntu18.04
+
+  ext-cpd:
+  - id: mme-ens3
+    int-cpd:
+      cpd: mme-mgmt-cp
+      vdu-id: mme
+  - id: mme-ens4
+    int-cpd:
+      cpd: mme-s6a-cp
+      vdu-id: mme
+  - id: mme-ens5
+    int-cpd:
+      cpd: mme-s11-cp
+      vdu-id: mme
+  - id: mme-ens6
+    int-cpd:
+      cpd: mme-s1c-cp
+      vdu-id: mme
+
+
+  mgmt-cp: mme-ens3

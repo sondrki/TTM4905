@@ -1,0 +1,16 @@
+name: mmecharm
+summary: MME charm
+maintainer: Sondre Kielland <sondrki@stud.ntnu.no>
+description: |
+  Based on Simula OAI EPC.
+tags:
+  - nfv
+  - epc
+  - oai
+subordinate: false
+series:
+  - bionic
+  - xenial
+peers:
+  proxypeer:
+    interface: proxypeer
