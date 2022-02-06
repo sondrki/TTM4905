@@ -1,0 +1,258 @@
+vnfd:
+  id: OAI-EPC_spgwcwg_multi
+  product-name: OAI-EPC_spgwcwg_multi
+  description: OpenAirInterface Evolved Packet Core HSS VNF. SOL006 version based on the work of Thomas Dreibholz
+  provider: Sondre Kielland (based on the work of Thomas Dreibholz)
+  version: '1.0'
+  # logo: NorNet.png
+
+  df:
+  - id: spgwc-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 1
+        vdu-id: spgwc
+    vdu-profile:
+    - id: spgwc
+      min-number-of-instances: 1
+    #virtual-link-profile:
+    #- id: ens4      # SXab
+    #  flavour: salty
+    #  virtual-link-protocol-data:
+    #    l3-protocol-data:
+    #      cidr: 172.55.55.0/24
+    #      dhcp-enabled: true
+    #- id: ens5 # S11
+    #  flavour: salty
+    #  virtual-link-protocol-data:
+    #    l3-protocol-data:
+    #      cidr: 172.16.1.0/24
+    #      dhcp-enabled: true
+
+    lcm-operations-configuration:
+      operate-vnf-op-config:
+        day1-2:
+        - id: OAI-EPC_spgwcwg_multi
+          juju:
+            charm: spgwccharm
+          initial-config-primitive:
+          - seq: '1'
+            name: config
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+            parameter:
+            - name: ssh-hostname
+              value: <rw_mgmt_ip>
+            - name: ssh-username
+              value: ubuntu
+            - name: ssh-password
+              value: osm4us
+          - seq: '2'
+            name: prepare-spgwc-build
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+            parameter:
+            - name: spgwc-git-repository
+              value: 'https://github.com/simula/openairinterface-openair-spgwc.git'
+            - name: spgwc-git-commit
+              value: '2020.w36'
+          - seq: '3'
+            name: configure-spgwc
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+            parameter:
+            - name: network-realm
+              value: 'ntnu.no'
+            - name: network-ipv4-dns1
+              value: '10.1.1.1'
+            - name: network-ipv4-dns2
+              value: '10.1.2.1'
+          - seq: '4'
+            name: restart-spgwc
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+          - seq: '5'
+            name: generatekeys
+            parameter:
+              - name: wg-interface
+                value: 'wg1'
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+          - seq: '6'
+            name: generatekeys
+            parameter:
+              - name: wg-interface
+                value: 'wg3'
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+          - seq: '7'
+            name: generatewgconfig
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+            parameter:
+            - name: tunnel-subnet
+              value: '172.16.1.0/24'
+            - name: gateway-ip
+              value: '192.168.10.4'
+            - name: endpoint
+              value: '172.16.1.104/24'
+            - name: wg-interface
+              value: 'wg1'
+            - name: listenport
+              value: '51821'
+          - seq: '8'
+            name: wgup
+            parameter: #s11 interface tunnel
+            - name: wg-interface
+              value: 'wg1'
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+          - seq: '9'
+            name: generatewgconfig # sxab
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+            parameter:
+            - name: tunnel-subnet
+              value: '172.55.55.0/24'
+            - name: gateway-ip
+              value: '192.168.16.101'
+            - name: endpoint
+              value: '172.55.55.101/24'
+            - name: wg-interface
+              value: 'wg3'
+            - name: listenport
+              value: '51823'
+          - seq: '10'
+            name: wgup
+            parameter: #sxab interface tunnel
+            - name: wg-interface
+              value: 'wg3'
+            execution-environment-ref: OAI-EPC_spgwcwg_multi
+          config-primitive:
+          - name: wgaddpeer
+            parameter:
+            - name: peer-publickey
+              data-type: STRING
+              default-value: ''
+            - name: subnet-behind-tunnel
+              data-type: STRING
+              default-value: '192.168.0.0/24'
+            - name: public_endpoint
+              data-type: STRING
+              default-value: '192.168.0.1/24'
+          - name: wgdelpeer
+          - name: wgrestart
+
+  vdu:
+  - id: spgwc
+    # ###### VDU: SPGW-C ##########################
+    name: spgwc
+    description: spgwc
+    # count: 1
+    cloud-init-file: spgwc-init
+    sw-image-desc: ubuntu18.04
+    virtual-compute-desc: spgwc-compute-desc
+    virtual-storage-desc: 
+    - spgwc-storage
+
+    # ====== Internal Connection Points ===============================
+    int-cpd:
+    - id: spgwc-mgmt-cp
+      virtual-network-interface-requirement:
+      - name: ens3
+        position: 1
+        virtual-interface:
+          type: PARAVIRT
+    - id: spgwc-sxab-cp
+      virtual-network-interface-requirement:
+      - name: ens4
+        position: 2
+        virtual-interface:
+          type: PARAVIRT
+    - id: spgwc-s11-cp
+      virtual-network-interface-requirement:
+      - name: ens5
+        position: 3
+        virtual-interface:
+          type: PARAVIRT
+
+    # monitoring parameters
+    monitoring-parameter:
+    - id: system_random
+      name: system_random
+    - id: system_uptime
+      name: system_uptime
+    - id: system_users
+      name: system_users
+    - id: cpu_processes
+      name: cpu_processes
+    - id: cpu_load_current
+      name: cpu_load_current
+    - id: cpu_load_1min
+      name: cpu_load_1min
+    - id: cpu_load_5min
+      name: cpu_load_5min
+    - id: cpu_load_15min
+      name: cpu_load_15min
+    - id: memory_ram_usage
+      name: memory_ram_usage
+    - id: memory_swap_usage
+      name: memory_swap_usage
+    - id: disk_usage
+      name: disk_usage
+    - id: network_mgmt_bytes_in
+      name: network_mgmt_bytes_in
+    - id: network_mgmt_packets_in
+      name: network_mgmt_packets_in
+    - id: network_mgmt_bytes_out
+      name: network_mgmt_bytes_out
+    - id: network_mgmt_packets_out
+      name: network_mgmt_packets_out
+    - id: network_SXab_bytes_in
+      name: network_SXab_bytes_in
+    - id: network_SXab_packets_in
+      name: network_SXab_packets_in
+    - id: network_SXab_bytes_out
+      name: network_SXab_bytes_out
+    - id: network_SXab_packets_out
+      name: network_SXab_packets_out
+    - id: network_S11_bytes_in
+      name: network_S11_bytes_in
+    - id: network_S11_packets_in
+      name: network_S11_packets_in
+    - id: network_S11_bytes_out
+      name: network_S11_bytes_out
+    - id: network_S11_packets_out
+      name: network_S11_packets_out
+
+      
+
+  # ====== VDU VM Configuration =====================================
+  virtual-compute-desc:
+  - id: spgwc-compute-desc
+    virtual-memory:
+      size: 3.0
+      #size: 2.0
+    virtual-cpu:
+      # num-virtual-cpu: 4
+      num-virtual-cpu: 4
+
+  virtual-storage-desc:
+  - id: spgwc-storage
+    size-of-storage: 30
+    # size-of-storage: 64
+
+  # VM image description
+  sw-image-desc:
+  - id: ubuntu18.04
+    image: ubuntu18.04
+    name: ubuntu18.04
+
+  ext-cpd:
+  - id: spgwc-ens3
+    int-cpd:
+      cpd: spgwc-mgmt-cp
+      vdu-id: spgwc
+  - id: spgwc-ens4
+    int-cpd:
+      cpd: spgwc-sxab-cp
+      vdu-id: spgwc
+  - id: spgwc-ens5
+    int-cpd:
+      cpd: spgwc-s11-cp
+      vdu-id: spgwc
+
+
+  mgmt-cp: spgwc-ens3
