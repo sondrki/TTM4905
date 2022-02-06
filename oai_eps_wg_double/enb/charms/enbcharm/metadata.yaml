@@ -1,0 +1,22 @@
+name: enbcharm
+display-name: enbcharm
+summary: eNB Charm
+maintainer: Sondre Kielland
+description: |
+  This charm manages the eNB
+tags:
+  - network
+subordinate: false
+series:
+  - xenial
+  - bionic
+  - focal
+
+peers:
+  proxypeer:
+    interface: proxypeer
+requires:
+  interfaces1u:
+    interface: interfaces1u
+  interfaces1c:
+    interface: interfaces1c
