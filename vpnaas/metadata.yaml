@@ -1,0 +1,11 @@
+# metadata.yaml - provider side
+...
+provides:
+  relationprovider:
+    interface: relation # must be equal on both require and provider side
+
+# metadata.yaml - require side
+...
+requires:
+  relationrequire:
+    interface: relation # must be equal on both require and provider side
