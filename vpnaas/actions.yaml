@@ -1,0 +1,46 @@
+# actions.yaml
+...
+generatekeys:
+  description: "generates wireguard keys"
+generatewgconfig:
+  description: "generates wireguard config"
+  params:
+        tunnel-subnet:
+            description: "subnets the other side should allow for in Allowed IPs"
+            type: string
+            default: ""
+  required:
+        - tunnel-subnet
+wgup:
+  description: "bring up wireguard"
+wgaddpeer:
+  description: "add peer to wireguard config"
+  params:
+        peer-publickey:
+            description: "publickey of a peer"
+            type: string
+            default: ""
+        subnet-behind-tunnel:
+            description: "subnet to allow from other side of the wg tunnel"
+            type: string
+            default: ""
+        wg-interface:
+            description: "interface name"
+            type: string
+            default: "wg0"        
+        listenport:
+            description: "port to listen on"
+            type: string
+            default: "51820"        
+  required:
+        - peer-publickey
+        - subnet-behind-tunnel
+wgdelpeer:
+  description: "delete peer from wireguard config"
+wgrestart:
+  description: "restarts the wireguard service"
+  params:
+        wg-interface:
+            description: "interface to restart"
+            type: string
+            default: "wg0"
