@@ -1,0 +1,47 @@
+# vnfd.yaml
+...
+    lcm-operations-configuration:
+      operate-vnf-op-config:
+        day1-2:
+        - id: vnfd\_id
+          juju:
+            charm: name # name of charm given in metadata.yaml and normally also the folder name 
+          initial-config-primitive:
+            ...
+          - seq: '2'
+            name: generatekeys
+            execution-environment-ref: vnfd\_id
+          - seq: '3'
+            name: generatewgconfig
+            execution-environment-ref: vnfd\_id
+            parameter:
+            - name: tunnel-subnet
+              value: '192.168.248.0/24' # WireGuard subnet the peer should allow data from
+            - name: gateway-ip
+              value: '10.21.21.57' # external connection point
+            - name: endpoint
+              value: '192.168.248.157/24' # internal IP address to use for WireGuard 
+            - name: wg-interface 
+              value: 'wg0' # interface name. Not mandatory. Used in case of multiple WireGuard tunnels.
+            - name: listenport
+              value: '51820' # Port external connection point is listening on. Not mandatory. Used in case of multiple WireGuard tunnels. 
+          - seq: '4'
+            name: wgup # Brings up the WireGuard interface
+            parameter:
+            - name: wg-interface
+              value: 'wg0'
+            execution-environment-ref: vnfd\_id
+          config-primitive: # Manual steps. Day-2 operations
+          - name: wgaddpeer
+            parameter:
+            - name: peer-publickey
+              data-type: STRING
+              default-value: ''
+            - name: subnet-behind-tunnel
+              data-type: STRING
+              default-value: '192.168.0.0/16'
+            - name: public_endpoint
+              data-type: STRING
+              default-value: '192.168.0.1/24'
+          - name: wgdelpeer
+          - name: wgrestart
