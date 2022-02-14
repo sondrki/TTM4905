@@ -1,0 +1,41 @@
+# Copyright [2018] [Felipe Vicens, Pol Alemany, Ricard Vilalta]
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+nst:
+-   id: oai_epcwg_embb_nst2
+    name: oai_epcwg_embb_nst2
+    SNSSAI-identifier:
+        slice-service-type: eMBB
+    quality-of-service:
+        id: 6
+        resource-type: GBR
+        priority-level: 2
+        packet-delay-budget: 100 #ms
+        default-max-data-burst: 1354
+
+    netslice-subnet:
+    -   id: OAI-EPC_nsdwg
+        is-shared-nss: false
+        description: network slice template for OAI EPC with WireGuard
+        nsd-ref: OAI-EPC_nsdwg
+
+    netslice-vld:
+    -   id: mgmtcp
+        name: mgmtcp
+        type: ELAN
+        mgmt-network: true
+        nss-connection-point-ref:
+        -   nss-ref: OAI-EPC_nsdwg
+            nsd-connection-point-ref: mgmtcp
+ 
