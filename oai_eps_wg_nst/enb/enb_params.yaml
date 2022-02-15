@@ -189,13 +189,13 @@ vnfd:
   virtual-compute-desc:
   - id: enb-compute-desc
     virtual-memory:
-      size: 16.0
+      size: 8.0
       #size: 3.0
       #size: 10.0
     virtual-cpu:
       #num-virtual-cpu: 2
       #num-virtual-cpu: 6
-      num-virtual-cpu: 8
+      num-virtual-cpu: 4
 
   virtual-storage-desc:
   - id: enb-storage

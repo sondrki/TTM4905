@@ -238,10 +238,10 @@ vnfd:
   - id: spgwu-compute-desc
     virtual-memory:
       #size: 2.0
-      size: 6.0
+      size: 3.0
     virtual-cpu:
       #num-virtual-cpu: 2
-      num-virtual-cpu: 2
+      num-virtual-cpu: 1
       # num-virtual-cpu: 4
 
   virtual-storage-desc:

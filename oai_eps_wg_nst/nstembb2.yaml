@@ -12,30 +12,69 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 nst:
--   id: oai_epcwg_embb_nst2
-    name: oai_epcwg_embb_nst2
-    SNSSAI-identifier:
+-   SNSSAI-identifier:
         slice-service-type: eMBB
+    id: oai_epcwg_embb_nst
+    name: oai_epcwg_embb_nst
+    netslice-subnet:
+    -   description: network slice template for OAI EPC with WireGuard
+        id: 1
+        instantiation-parameters:
+            vld:
+            -   name: mgmtnet
+                vim-network-name: test
+                vnfd-connection-point-ref:
+                -   ip-address: 192.168.8.129
+                    member-vnf-index-ref: '1'
+                    vnfd-connection-point-ref: hss-ens4
+                -   ip-address: 192.168.8.2
+                    member-vnf-index-ref: '2'
+                    vnfd-connection-point-ref: mme-ens4
+                -   ip-address: 192.168.10.2
+                    member-vnf-index-ref: '2'
+                    vnfd-connection-point-ref: mme-ens5
+                -   ip-address: 192.168.7.102
+                    member-vnf-index-ref: '2'
+                    vnfd-connection-point-ref: mme-ens6
+                -   ip-address: 192.168.16.101
+                    member-vnf-index-ref: '3'
+                    vnfd-connection-point-ref: spgwc-ens4
+                -   ip-address: 192.168.10.4
+                    member-vnf-index-ref: '3'
+                    vnfd-connection-point-ref: spgwc-ens5
+                -   ip-address: 192.168.16.102
+                    member-vnf-index-ref: '4'
+                    vnfd-connection-point-ref: spgwu-ens4
+                -   ip-address: 192.168.9.159
+                    member-vnf-index-ref: '4'
+                    vnfd-connection-point-ref: spgwu-ens5
+                -   ip-address: 10.254.1.203
+                    member-vnf-index-ref: '4'
+                    vnfd-connection-point-ref: spgwu-ens6
+                -   ip-address: 192.168.7.101
+                    member-vnf-index-ref: '5'
+                    vnfd-connection-point-ref: enb-ens4
+                -   ip-address: 192.168.9.57
+                    member-vnf-index-ref: '5'
+                    vnfd-connection-point-ref: enb-ens5
+                -   ip-address: 192.168.249.1
+                    member-vnf-index-ref: '5'
+                    vnfd-connection-point-ref: enb-ens6
+        is-shared-nss: false
+        nsd-ref: OAI-EPC_nsdwg
+    netslice-vld:
+    -   id: mgmtcp
+        mgmt-network: true
+        name: mgmtcp
+        nss-connection-point-ref:
+        -   nsd-connection-point-ref: mgmtcp
+            nss-ref: OAI-EPC_nsdwg
+        type: ELAN
     quality-of-service:
         id: 6
         resource-type: GBR
         priority-level: 2
         packet-delay-budget: 100 #ms
         default-max-data-burst: 1354
-
-    netslice-subnet:
-    -   id: OAI-EPC_nsdwg
-        is-shared-nss: false
-        description: network slice template for OAI EPC with WireGuard
-        nsd-ref: OAI-EPC_nsdwg
-
-    netslice-vld:
-    -   id: mgmtcp
-        name: mgmtcp
-        type: ELAN
-        mgmt-network: true
-        nss-connection-point-ref:
-        -   nss-ref: OAI-EPC_nsdwg
-            nsd-connection-point-ref: mgmtcp
- 
