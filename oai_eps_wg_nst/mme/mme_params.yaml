@@ -285,10 +285,10 @@ vnfd:
   virtual-compute-desc:
   - id: mme-compute-desc
     virtual-memory:
-      size: 8.0
+      size: 4.0
     virtual-cpu:
       # num-virtual-cpu: 4
-      num-virtual-cpu: 4
+      num-virtual-cpu: 2
 
   virtual-storage-desc:
   - id: mme-storage

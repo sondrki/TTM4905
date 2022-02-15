@@ -223,11 +223,11 @@ vnfd:
   virtual-compute-desc:
   - id: spgwc-compute-desc
     virtual-memory:
-      size: 6.0
+      size: 3.0
       #size: 2.0
     virtual-cpu:
       # num-virtual-cpu: 4
-      num-virtual-cpu: 8
+      num-virtual-cpu: 4
 
   virtual-storage-desc:
   - id: spgwc-storage
